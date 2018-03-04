@@ -1,14 +1,7 @@
 #home {
   color: #ffffff;
-  width: 100%;
   height: calc(100vh - 80px);
   position: relative;
-  .header {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-content: center;
-  }
   .middle {
     position: absolute;
     display: flex;
@@ -23,7 +16,7 @@
       text-align: right;
       #home-link {
         color: #fff;
-        font-size: 24px;
+        font-size: 1.5em;
         text-decoration-line: underline;
       }
     }
@@ -38,10 +31,10 @@
       }
       .descr-title {
         text-align: left;
-        font-size: 36px;
+        font-size: 2em;
       }
       .descr {
-        font-size: 24px;
+        font-size: 1.5em;
         max-width: 500px;
       }
     }

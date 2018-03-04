@@ -1,3 +1,5 @@
+$break-small: 720px;
+
 #contacts {
   color: #fff;
   display: flex;
@@ -9,7 +11,7 @@
   .header {
     margin-bottom: 80px;
     .title-item {
-      font-size: 60px;
+      font-size: 3.5em;
         .item {
           margin:0;
         }
@@ -17,15 +19,20 @@
       .subBlock {
         position: relative;
         overflow: hidden;
-        line-height: 40px;
       }
     .sub-list {
       margin-left: 10px;
-      font-size: 24px;
+      font-size: 1.5em;
       text-decoration: line-through;
       text-align: left;
       animation: textChange 10s infinite;
       position: relative;
+      li {
+        line-height: 1em;
+        @media screen and (max-width: $break-small) {
+          line-height: 1.6em;
+        }
+      }
     }
     .pre-sub {
       display: inline-block;
@@ -39,13 +46,12 @@
   .contacts-list {
     display: flex;
     flex-direction: column;
-    padding-left: 100px;
     .contact {
       .title {
-          font-size: 30px;
+          font-size: 1.8em;
         }
       .text {
-        font-size: 30px;
+        font-size: 1.2em;
       }
     }
   }

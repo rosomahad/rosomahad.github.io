@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import '../assets/home.scss';
 import Scrollchor from 'react-scrollchor';
 
 class Home extends Component {
   render () {
     return (
-      <div id="home">
+      <div className="container" id="home">
         <div className="middle">
           <div className="descr-wrapper">
             <p className="descr-title">

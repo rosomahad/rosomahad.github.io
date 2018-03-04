@@ -1,34 +1,40 @@
 import React, { Component } from 'react';
-import BGAnimation from './components/backgroundAnimation.jsx';
 import Home from './components/home.jsx';
 import Work from './components/work.jsx';
 import Contacts from './components/contacts.jsx';
-import LeftSideBar from './components/leftSideBar.jsx';
-import Scrollchor from 'react-scrollchor';
-import animate from './components/canvas';
+import Navigation from './components/navigation.jsx';
+import AOS from 'aos';
+import './assets/aos.css';
+import MouseAnimation from './components/mouseAnimation';
 
 class App extends Component {
   constructor() {
     super();
+    const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
     this.state = {
-      loading: true
+      loading: true,
+      isMobile,
     };
   }
   componentDidMount() {
-    animate();
+    AOS.init({
+      offset: 200,
+      duration: 600,
+      easing: 'ease-in-sine',
+      delay: 100,
+      disable: this.state.isMobile,
+    });
   }
+
   render () {
     return (
       <div id="main-container">
         <Home />
-        <BGAnimation />
         <Work />
         <Contacts />
-        <LeftSideBar />
-        <div id="contacts-bar">
-          <Scrollchor to="#contacts" className="nav-link">Contacts</Scrollchor>
-        </div>
-        <canvas id="mouse-animation"/>
+        <Navigation />
+        { this.state.isMobile ? '' : <MouseAnimation /> }
+        <div id="bgShadow" />
       </div>
     );
   }

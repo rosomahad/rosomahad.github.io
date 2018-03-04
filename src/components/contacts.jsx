@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import '../assets/contacts.scss';
 
 class Contacts extends Component {
   render () {
     return (
-      <div id="contacts">
+      <div className="container" data-aos='fade-in' id="contacts">
         <div className="header">
           <p className="title-item">You</p>
           <p className="title-item pre-sub">Can</p>
