@@ -1,0 +1,61 @@
+#contacts {
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  height: calc(100vh - 40px);
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  .header {
+    margin-bottom: 80px;
+    .title-item {
+      font-size: 60px;
+        .item {
+          margin:0;
+        }
+      }
+      .subBlock {
+        position: relative;
+        overflow: hidden;
+        line-height: 40px;
+      }
+    .sub-list {
+      margin-left: 10px;
+      font-size: 24px;
+      text-decoration: line-through;
+      text-align: left;
+      animation: textChange 10s infinite;
+      position: relative;
+    }
+    .pre-sub {
+      display: inline-block;
+    }
+    .hideBlock {
+      display: inline-block;
+      overflow: hidden;
+      height: 20px;
+    }
+  }
+  .contacts-list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 100px;
+    .contact {
+      .title {
+          font-size: 30px;
+        }
+      .text {
+        font-size: 30px;
+      }
+    }
+  }
+}
+
+@keyframes textChange {
+  0%, 12.66%, 100% {transform:translate3d(0,0,0);}
+  16.66%, 29.32% {transform:translate3d(0,-25%,0);}
+  33.32%,45.98% {transform:translate3d(0,-50%,0);}
+  49.98%,62.64% {transform:translate3d(0,-75%,0);}
+  66.64%,79.3% {transform:translate3d(0,-50%,0);}
+  83.3%,95.96% {transform:translate3d(0,-25%,0);}
+}
