@@ -46,7 +46,7 @@ const config = {
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
         use: [
-          'file-loader',
+          'file-loader?name=/img/[name].[ext]',
           {
             loader: 'image-webpack-loader',
             options: {

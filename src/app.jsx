@@ -16,6 +16,7 @@ class App extends Component {
       isMobile,
     };
   }
+
   componentDidMount() {
     AOS.init({
       offset: 200,
@@ -34,7 +35,6 @@ class App extends Component {
         <Contacts />
         <Navigation />
         { this.state.isMobile ? '' : <MouseAnimation /> }
-        <div id="bgShadow" />
       </div>
     );
   }
