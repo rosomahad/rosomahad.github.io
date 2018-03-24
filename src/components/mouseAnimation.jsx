@@ -1,37 +1,68 @@
 import React, { Component } from 'react';
 import { TweenMax } from 'gsap';
 
-let width, height, canvas, ctx, points, target, animateHeader = true;
+let ctx;
 
 class MouseAnimation extends Component {
   constructor(props) {
     super(props);
 
     this.getDistance = this.getDistance.bind(this);
+    this.mouseMove = this.mouseMove.bind(this);
     this.animate = this.animate.bind(this);
     this.resize = this.resize.bind(this);
+    this.init = this.init.bind(this);
     this.state = {
       height: 0,
       width: 0,
+      target: {
+        x: 0,
+        y: 0,
+      },
+      points: [],
+      limit: 3,
+      circleSize: 2,
+      lineColor: '0, 0, 0',
+      circleColor: '0, 0, 0',
     }
   }
-  componentDidMount() {
-    if (!('ontouchstart' in window)) {
-      window.addEventListener('mousemove', this.mouseMove);
-    }
-    window.addEventListener('scroll', this.scrollCheck);
-    window.addEventListener('resize', this.resize);
 
-    this.initHeader();
-    this.initAnimation();
+  switchEvents(remove = false) {
+    if(remove) {
+      if (!('ontouchstart' in window)) {
+        window.removeEventListener('mousemove', this.mouseMove);
+      }
+      window.removeEventListener('resize', this.resize);
+      window.removeEventListener("resize", this.init);
+    } else {
+      if (!('ontouchstart' in window)) {
+        // Do animation every N mls
+        let timingFunc = this.debounce(this.mouseMove, 10);
+        window.addEventListener('mousemove', timingFunc);
+      }
+      window.addEventListener('resize', this.resize);
+      window.addEventListener("resize", this.init);
+    }
+  }
+
+  componentDidMount() {
+    this.init();
+    this.switchEvents();
+  }
+
+  init() {
+    const initialData = this.initHeader();
+    const points = this.initAnimation(initialData.points);
+    this.setState({
+      target: initialData.target,
+      height: initialData.height,
+      width: initialData.width,
+      points,
+    });
   }
 
   componentWillUnmount() {
-    if (!('ontouchstart' in window)) {
-      window.removeEventListener('mousemove', this.mouseMove);
-    }
-    window.removeEventListener('scroll', this.scrollCheck);
-    window.removeEventListener('resize', this.resize);
+    this.switchEvents(true);
   }
 
   getDistance(p1, p2) {
@@ -52,26 +83,22 @@ class MouseAnimation extends Component {
       if (!that.active) return;
       ctx.beginPath();
       ctx.arc(that.pos.x, that.pos.y, that.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = `rgba(156,217,249,${this.active})`;
+      ctx.fillStyle = `rgba(${that.color},${this.active})`;
       ctx.fill();
     };
   }
 
   initHeader() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    target = {
-      x: width / 2,
-      y: height / 2,
-    };
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
-    canvas = document.getElementById('mouse-animation');
+    let canvas = this.refs.animation;
     canvas.width = width;
     canvas.height = height;
     ctx = canvas.getContext('2d');
 
     // create points
-    points = [];
+    let points = [];
     for (let x = 0; x < width; x += width / 20) {
       for (let y = 0; y < height; y += height / 20) {
         const px = x + ((Math.random() * width) / 20);
@@ -85,7 +112,7 @@ class MouseAnimation extends Component {
         points.push(p);
       }
     }
-
+    const limit = this.state.limit;
     // for each point find the 5 closest points
     for (let i = 0; i < points.length; i += 1) {
       const closest = [];
@@ -94,7 +121,7 @@ class MouseAnimation extends Component {
         const p2 = points[j];
         if (!(p1 === p2)) {
           let placed = false;
-          for (let k = 0; k < 5; k += 1) {
+          for (let k = 0; k < limit; k += 1) {
             if (!placed) {
               if (closest[k] === undefined) {
                 closest[k] = p2;
@@ -103,7 +130,7 @@ class MouseAnimation extends Component {
             }
           }
 
-          for (let k = 0; k < 5; k += 1) {
+          for (let k = 0; k < limit; k += 1) {
             if (!placed) {
               if (this.getDistance(p1, p2) < this.getDistance(p1, closest[k])) {
                 closest[k] = p2;
@@ -118,18 +145,35 @@ class MouseAnimation extends Component {
 
     // assign a circle to each point
     points.forEach((item, i) => {
-      points[i].circle = new this.Circle(points[i], 2 + (Math.random() * 2), 'rgba(255,255,255,0.3)');
+      points[i].circle = new this.Circle(points[i], 2 + (Math.random() * this.state.circleSize), this.state.circleColor);
     });
+
+    return {
+      target: {
+        x: width / 2,
+        y: height / 2,
+      },
+      width,
+      height,
+      points,
+    }
   }
 
   mouseMove(e) {
+    let x, y;
     if (e.pageX || e.pageY) {
-      target.x = e.clientX;
-      target.y = e.clientY;
+      x = e.clientX;
+      y = e.clientY;
     } else if (e.clientX || e.clientY)    {
-      target.x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      target.y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+      y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     }
+    this.setState({
+      target: {
+        x,
+        y
+      },
+    })
   }
 
   resize() {
@@ -139,44 +183,55 @@ class MouseAnimation extends Component {
     })
   }
 
-  scrollCheck() {
-    animateHeader = !(document.body.scrollTop > height);
-  }
-
   drawLines(p) {
     if (!p.active) return;
     p.closest.forEach((item, index) => {
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
       ctx.lineTo(p.closest[index].x, p.closest[index].y);
-      ctx.strokeStyle = `rgba(156,217,249,${p.active})`;
+      ctx.strokeStyle = `rgba(${this.state.lineColor},${p.active})`;
       ctx.stroke();
     });
   }
+  debounce(func, wait, immediate) {
+    let timeout;
+    return function() {
+      const context = this, args = arguments;
+      const later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      const callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  };
 
   animate() {
-    if (animateHeader) {
-      ctx.clearRect(0, 0, width, height);
-      points.forEach((item, i) => {
-        // detect points in range
-        if(Math.abs(this.getDistance(target, points[i])) < 4000) {
-          points[i].active = 0.3;
-          points[i].circle.active = 0.6;
-        } else if (Math.abs(this.getDistance(target, points[i])) < 20000) {
-          points[i].active = 0.1;
-          points[i].circle.active = 0.3;
-        } else if (Math.abs(this.getDistance(target, points[i])) < 40000) {
-          points[i].active = 0.02;
-          points[i].circle.active = 0.1;
-        } else {
-          points[i].active = 0;
-          points[i].circle.active = 0;
-        }
+    let { points } = this.state;
+    const { target } = this.state;
+    ctx.clearRect(0, 0, this.state.width, this.state.height);
 
-        this.drawLines(points[i]);
-        points[i].circle.draw();
-      });
-    }
+    points.forEach((item, i) => {
+      // detect points in range
+      if(Math.abs(this.getDistance(target, points[i])) < 4000) {
+        points[i].active = 0.3;
+        points[i].circle.active = 0.6;
+      } else if (Math.abs(this.getDistance(target, points[i])) < 20000) {
+        points[i].active = 0.1;
+        points[i].circle.active = 0.3;
+      } else if (Math.abs(this.getDistance(target, points[i])) < 40000) {
+        points[i].active = 0.02;
+        points[i].circle.active = 0.1;
+      } else {
+        points[i].active = 0;
+        points[i].circle.active = 0;
+      }
+
+      this.drawLines(points[i]);
+      points[i].circle.draw();
+    });
     requestAnimationFrame(this.animate);
   }
 
@@ -190,11 +245,12 @@ class MouseAnimation extends Component {
     });
   }
 
-  initAnimation() {
+  initAnimation(points) {
     this.animate();
     points.forEach((item, i) => {
       this.shiftPoint(points[i]);
     });
+    return points;
   }
 
   render () {
@@ -203,6 +259,7 @@ class MouseAnimation extends Component {
         id="mouse-animation"
         height={this.state.height}
         width={this.state.width}
+        ref="animation"
       />
     )
   }

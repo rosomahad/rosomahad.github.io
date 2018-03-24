@@ -9,11 +9,10 @@ class Work extends Component {
     return (
       <div
         className="container work"
-        data-aos={`${order === 1 ? 'fade-right' : 'fade-left'}`}
         key={index}
         id={`work${index + 1}`}
       >
-        <div className="item">
+        <div className="item" data-aos={`${order === 1 ? 'fade-right' : 'fade-left'}`}>
           <figure className="swing" style={{order}}>
             <div className="polaroid">
               <div className="polaroid-img">

@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Indie+Flower');
 @import url('https://fonts.googleapis.com/css?family=Special+Elite');
+
 $break-small: 720px;
 
 html {
@@ -19,11 +20,31 @@ body {
   @media screen and (max-width: $break-small) {
     font-size: 12px;
   }
-  background-color: rgba(0, 0, 0, 0.5);
-  background-image: url("../images/bg.jpg");
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: 50% 50%;
+  &:before {
+    content: "";
+    opacity: 0.7;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    z-index: -1;
+  }
+  &:after {
+    content: "";
+    background-image: url("../images/bg.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: 50% 50%;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: -2;
+  }
 }
 p {
   margin: 0;
